@@ -1,0 +1,28 @@
+{
+    "name": "ermirshehaj/devpos",
+    "description": "This package will fiscalize your business",
+    "authors": [
+        {
+            "name": "ermiri",
+            "email": "ermirshehaj@gmail.com"
+        }
+    ],
+    "license": "MIT",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "ErmirShehaj\\DevPos\\DevPosServiceProvider"
+            ],
+            "aliases": {
+                "DevPos": "ErmirShehaj\\DevPos\\Facades\\DevPos"
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+          "ErmirShehaj\\DevPos\\": "src"
+        }
+    },
+    "minimum-stability": "dev",
+    "require": {}
+}

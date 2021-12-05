@@ -219,7 +219,6 @@
     <script>
 
         //put all tcrs to cache
-        //Cache.put('invoices', @php echo json_encode($items) @endphp);
 
         Cache.put('paymentMethods', @php echo json_encode($paymentMethods) @endphp);
         Cache.put('feeTypes', @php echo json_encode($feeTypes) @endphp);

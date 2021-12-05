@@ -42,6 +42,9 @@ class TCR extends Model {
 
     public function create($parameters = []) {
 
+        //add default data
+        $parameters['businessUnitCode'] = DevPos::taxpayer()->get()['businessUnitCode'];
+        
         //first we validate the tcr
         //do some validations
         $validation = Validator::make($parameters, [

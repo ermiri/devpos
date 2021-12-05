@@ -54,7 +54,7 @@ class Account extends Model {
 
             "number" => "required|string|max:60",
             "currency" => "required|string|max:60",
-            "centerType" => "required|string|max:60",
+            "centerType" => "required|numeric",
 
             "accountName1" => "required|string|max:60",
             "accountName2" => "nullable|string|max:60",
@@ -77,6 +77,9 @@ class Account extends Model {
 
             throw new \Illuminate\Validation\ValidationException($validation);
         }
+
+        //cast
+        $parameters['centerType'] = (int)$parameters['centerType'];
 
         return $this->post('/api/v3/Accounts', $parameters);
     }

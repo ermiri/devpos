@@ -35,7 +35,8 @@ return [
    * Anyway we strongly suggest you to live the system do the work by itself.
    * 
    */
-
+  
+  'cache' => true,
   'cache_prefix' => 'devpos', //use prefix to prevent collision with other keys in the cache
   'cache_timeout' => '1800', //general cache timeout. Timeout specified on model will override this.
   'cache_models' => [

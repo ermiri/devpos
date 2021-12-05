@@ -120,9 +120,6 @@
         Cache.put('supplier-lists', @php echo json_encode($items) @endphp);
         Cache.put('suppliers', @php echo json_encode($suppliers) @endphp);
 
-        //set all models
-        var modelsList = @php echo json_encode(getModels()); @endphp
-
         DevPos.SupplierList.load();
     </script>
 @endsection

@@ -262,7 +262,7 @@ abstract class Model {
     }
 
     protected function httpGet($path) {
-
+        
         return $this->setPath($path)->call('get', []);
     }
 

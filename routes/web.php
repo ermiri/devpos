@@ -32,13 +32,14 @@ use ErmirShehaj\DevPos\Facades\DevPos;
     Route::resource('/users', \ErmirShehaj\DevPos\Http\Controllers\UserController::class, ['as' => 'devpos']);
     Route::resource('/roles', \ErmirShehaj\DevPos\Http\Controllers\RoleController::class, ['as' => 'devpos']);
 
-    //Route::get('/tcrs/{tcr}/choose', [\ErmirShehaj\DevPos\Http\Controllers\TCRController::class, 'choose'], ['as' => 'devpos'])->name('tcrs.choose');
-    Route::post('/tcrs/choose', [\ErmirShehaj\DevPos\Http\Controllers\TCRController::class, 'choose'], ['as' => 'devpos'])->name('tcrs.choose');
-    Route::resource('/tcrs', \ErmirShehaj\DevPos\Http\Controllers\TCRController::class, ['as' => 'devpos']);
 
     Route::put('/tcr-balances/{balanceID}/fiscalize', '\ErmirShehaj\DevPos\Http\Controllers\TCRBalanceController@fiscalize')->name('devpos.tcr-balances.fiscalize');
     Route::get('/tcr-balances/unfiscalized', '\ErmirShehaj\DevPos\Http\Controllers\TCRBalanceController@unfiscalized')->name('devpos.tcr-balances.unfiscalized');
     Route::resource('/tcr-balances', \ErmirShehaj\DevPos\Http\Controllers\TCRBalanceController::class, ['as' => 'devpos']);
+
+    //Route::get('/tcrs/{tcr}/choose', [\ErmirShehaj\DevPos\Http\Controllers\TCRController::class, 'choose'], ['as' => 'devpos'])->name('tcrs.choose');
+    Route::post('/tcrs/choose', [\ErmirShehaj\DevPos\Http\Controllers\TCRController::class, 'choose'], ['as' => 'devpos'])->name('tcrs.choose');
+    Route::resource('/tcrs', \ErmirShehaj\DevPos\Http\Controllers\TCRController::class, ['as' => 'devpos']);
 
     Route::resource('/pos', POSController::class, ['as' => 'devpos']);
     Route::resource('/suppliers', SupplierController::class, ['as' => 'devpos']);

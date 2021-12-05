@@ -9,12 +9,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use ErmirShehaj\DevPos\Facades\DevPos;
 
-use App\Http\Requests\PosRequest;
 use \App\Models\Pos;
 use DateTime;
 
-class TCRController extends Controller
-{
+class TCRController extends Controller {
+
     /**
      * Display a listing of the resource.
      *

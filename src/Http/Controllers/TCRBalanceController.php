@@ -9,12 +9,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use ErmirShehaj\DevPos\Facades\DevPos;
 
-use App\Http\Requests\PosRequest;
 use \App\Models\Pos;
 use DateTime;
 
-class TCRBalanceController extends Controller
-{
+class TCRBalanceController extends Controller {
+
     /**
      * Display a listing of the resource.
      *
@@ -24,10 +23,15 @@ class TCRBalanceController extends Controller
 
         //authorize first
         //$this->authorize('menu', Pos::class);
+        // $tcrBalance = DevPos::tcrBalance();
+        // $tcrBalance->get();
+        // return [];
 
         //get tcr from devpos
-        $items = DevPos::tcrBalance()->get();
+        
 
+        $items = DevPos::tcrBalance()->get();
+        print_r($items);
         //get tcr from devpos
         $tcrs = DevPos::tcr()->get();
         

@@ -33,7 +33,7 @@ class POSController extends Controller
             'title' => __('Pos'),
             'breadcrumb' => [
 
-                __('Pos') => route('pos.index')
+                __('Pos') => route('devpos.pos.index')
             ],
             'menu' => 'devpos.pos',
             'items' => $items
@@ -138,7 +138,7 @@ class POSController extends Controller
             'title' => __('POS'),
             'breadcrumb' => [
 
-                __('POS') => route('pos.index')
+                __('POS') => route('devpos.pos.index')
             ],
             'menu' => 'pos',
             'categories' => $categories,

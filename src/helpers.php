@@ -812,3 +812,32 @@
             }
         }
     }
+
+    if (!function_exists('array_extend')) {
+        
+        function array_extend() {
+
+            $arrays = func_get_args();
+            $base = array_shift($arrays);
+            foreach ($arrays as $array) {
+        
+                reset($base);
+                while (list($key, $value) = @each($array))
+                    if (is_array($value) && @is_array($base[$key]))
+                        $base[$key] = array_extend($base[$key], $value);
+                    else $base[$key] = $value;
+            }
+        
+            return $base;
+        }
+    }
+    
+
+    if (!function_exists('priceNum')) {
+        
+        function priceNum($number) {
+
+            if (is_numeric($number))
+                return number_format($number, 2, '.', ' ');
+        } 
+    }

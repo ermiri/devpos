@@ -148,7 +148,7 @@ class InvoiceController extends Controller
                 
                 'Status' => 'error',
                 'Msg' => $error->getMessage(),
-                'Data' => $parameters
+                'Data' => $request->all()
             ];
         }
         catch(\Illuminate\Auth\AuthenticationException $error) {
@@ -158,7 +158,7 @@ class InvoiceController extends Controller
                 'Status' => 'error',
                 'Msg' => $error->getMessage(),
                 'Authentication' => 'Unauthorized 401',
-                'Data' => $parameters
+                'Data' => $request->all()
             ];
         }
         catch(\Exception $error) {
@@ -167,7 +167,7 @@ class InvoiceController extends Controller
                 
                 'Status' => 'error',
                 'Msg' => $error->getMessage(),
-                'Data' => $parameters
+                'Data' => $request->all()
             ];
         }
 

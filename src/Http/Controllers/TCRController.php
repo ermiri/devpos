@@ -9,11 +9,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use ErmirShehaj\DevPos\Facades\DevPos;
 
+use App\Http\Requests\PosRequest;
 use \App\Models\Pos;
 use DateTime;
 
-class TCRController extends Controller {
-
+class TCRController extends Controller
+{
     /**
      * Display a listing of the resource.
      *
@@ -219,13 +220,13 @@ class TCRController extends Controller {
 
     public function choose(Request $request) {
 
+        
         if (empty($request->all())) {
 
             return [
 
                 'Status' => 'error',
                 'Msg' => 'Please choose a fiscalized tcr!',
-                'Data' => $tcr_code
             ];
         }
 
@@ -235,7 +236,8 @@ class TCRController extends Controller {
         return [
 
             'Status' => 'OK',
-            'Data' => $request->all()
+            'Data' => $request->all(),
+            'Session' => session()->get('tcr')
         ];
     }
 

@@ -337,6 +337,74 @@ class EPurchaseInvoiceController extends Controller
         ]);
     }
 
+    public function aprove($eic) {
+
+        try {
+            
+            $data = DevPos::epurchaseinvoice()->aprove($eic);
+
+            return [
+                
+                'Status' => 'OK',
+                'Msg' => 'Aproved successfully!',
+                'Data' => $data
+            ];
+        }
+        catch(\Illuminate\Validation\ValidationException $error) {
+
+            return [
+
+                'Status' => 'error',
+                'Msg' => $error->getMessage(),
+                'Data' => $eic,
+                'Errors' => $error->errors(),
+            ];
+        }
+        catch(\Exception $error) {
+
+            return [
+                
+                'Status' => 'error',
+                'Msg' => $error->getMessage(),
+                'Data' => $eic
+            ];
+        }
+    }
+
+    public function refuse($eic) {
+
+        try {
+            
+            $data = DevPos::epurchaseinvoice()->refuse($eic);
+
+            return [
+                
+                'Status' => 'OK',
+                'Msg' => 'Refused successfully!',
+                'Data' => $data
+            ];
+        }
+        catch(\Illuminate\Validation\ValidationException $error) {
+
+            return [
+
+                'Status' => 'error',
+                'Msg' => $error->getMessage(),
+                'Data' => $eic,
+                'Errors' => $error->errors(),
+            ];
+        }
+        catch(\Exception $error) {
+
+            return [
+                
+                'Status' => 'error',
+                'Msg' => $error->getMessage(),
+                'Data' => $eic
+            ];
+        }
+    }
+
 
 
 }

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use ErmirShehaj\DevPos\Facades\DevPos;
 
 use App\Http\Requests\PosRequest;
@@ -110,11 +111,15 @@ class AccompanyingInvoiceController extends Controller
         $subsequentDeliveryTypes = DevPos::enum()->getSubsequentDeliveryType();
         $vehicleOwnershipTypes = DevPos::enum()->getVehicleOwnershipTypes();
         $wtnTypes = DevPos::enum()->getWtnTypes();
+       // print_r($wtnTypes);
         $transactions = DevPos::enum()->getTransactionTypes();
 
         $pos = DevPos::pos()->get();
         //print_r($pos);
         $warehouses = DevPos::warehouse()->get();
+        
+        //get products
+        $products = DB::select('select * from price_list where Status = \'Active\'');
 
         return view('devpos::accompanying-invoice-new', [
 
@@ -134,6 +139,7 @@ class AccompanyingInvoiceController extends Controller
             'vehicleOwnershipTypes' => $vehicleOwnershipTypes,
             'wtnTypes' => $wtnTypes,
             'transactions' => $transactions,
+            'products' => $products,
         ]); 
         
     }

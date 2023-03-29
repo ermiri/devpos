@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use ErmirShehaj\DevPos\Facades\DevPos;
 
 use App\Http\Requests\PosRequest;
@@ -147,6 +148,9 @@ class EInvoiceController extends Controller
 
         //get cities from devpos
         $warehouses = DevPos::warehouse()->get();
+        
+        //get products
+        $products = DB::select('select * from price_list where Status = \'Active\'');
 
         return view('devpos::einvoice-new', [
 
@@ -173,6 +177,8 @@ class EInvoiceController extends Controller
             'einvoiceProcesses' => $einvoiceProcesses,
             'envoiceDocumentTypes' => $envoiceDocumentTypes,
             'subsequentDeliveryTypes' => $subsequentDeliveryTypes,
+            'products' => $products,
+            
         ]); 
     }
 
@@ -335,6 +341,26 @@ class EInvoiceController extends Controller
             'Data' => $deleted,
             'Msg' => $deleted == 0 ? 'Invoice deleted successfully':'Invoice didn\'t deleted successfully!'
         ]);
+    }
+
+    public function resend($iic) {
+
+        //cancel will return the invoice
+        $invoice = DevPos::einvoice()->resend($iic);
+        if (!empty($invoice['eic'])) {
+
+            return [
+
+                'Status' => 'OK',
+                'Data' => $invoice,
+            ];
+        }
+
+        return [
+
+            'Status' => 'error',
+        ];
+
     }
 
 

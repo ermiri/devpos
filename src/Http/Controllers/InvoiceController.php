@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use ErmirShehaj\DevPos\Facades\DevPos;
 
 use App\Http\Requests\PosRequest;
@@ -50,6 +51,9 @@ class InvoiceController extends Controller
         //get feeTypes from devpos
         $feeTypes = DevPos::enum()->getFeeTypes();
 
+        //get clients from devpos
+        $customers = DevPos::customer()->get();
+
         //get feeTypes from devpos
         $clientCardTypes = DevPos::enum()->getClientCardTypes();
 
@@ -70,6 +74,9 @@ class InvoiceController extends Controller
 
         //get cities from devpos
         $idTypes = DevPos::enum()->getIdTypes();
+        
+        //get products
+        $products = DB::select('select * from price_list where Status = \'Active\'');
 
         
         return view('devpos::invoices', [
@@ -84,6 +91,7 @@ class InvoiceController extends Controller
             'tcrs' => $tcrs,
             'paymentMethods' => $paymentMethods,
             'feeTypes' => $feeTypes,
+            'customers' => $customers,
             'clientCardTypes' => $clientCardTypes,
             'typesOfSelfIssuing' => $typesOfSelfIssuing,
             'currencies' => $currencies,
@@ -91,6 +99,7 @@ class InvoiceController extends Controller
             'cities' => $cities,
             'banks' => $banks,
             'idTypes' => $idTypes,
+            'products' => $products,
         ]);
     }
 
@@ -115,6 +124,8 @@ class InvoiceController extends Controller
         //authorize first
         //$this->authorize('create', Pos::class);
 
+        //return $request->all();
+        //return $item = DevPos::invoice()->create($request->all());
         try {
             
             $item = DevPos::invoice()->create($request->all());
@@ -138,6 +149,7 @@ class InvoiceController extends Controller
                 
                 'Status' => 'error',
                 'Msg' => $error->response->json()['message'],
+                'ErrorMsg' => $error->getMessage(),
                 'Errors' => $error->response->json(),
                 'Data' => $request->all()
             ];
@@ -167,7 +179,8 @@ class InvoiceController extends Controller
                 
                 'Status' => 'error',
                 'Msg' => $error->getMessage(),
-                'Data' => $request->all()
+                'Data' => $request->all(),
+                'Exception' => 'Test',
             ];
         }
 
@@ -389,6 +402,18 @@ class InvoiceController extends Controller
 
         //run export
         $content = DevPos::invoice()->export($parameters);
+
+        return $content;
+    }
+
+    public function exportSalesBook(Request $request) {
+
+        //delete _method=GET
+        $parameters = $request->all();
+        unset($parameters['_method']);
+
+        //run export
+        $content = DevPos::invoice()->exportSalesBook($parameters);
 
         return $content;
     }

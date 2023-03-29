@@ -22,6 +22,7 @@ class POSController extends Controller
      */
     public function index() {
 
+        
         //authorize first
         //$this->authorize('menu', Pos::class);
 
@@ -167,36 +168,36 @@ class POSController extends Controller
      */
     public function update(Request $request, $id) {
         
-        //authorize
-        $this->authorize('update', Pos::class);
+        // //authorize
+        // $this->authorize('update', Pos::class);
 
-        //validate
-        $validation = Validator::make($request->all(), Pos::rulesWith(
+        // //validate
+        // $validation = Validator::make($request->all(), Pos::rulesWith(
 
-            array_extend([
+        //     array_extend([
 
-                'code' => 'required',
-                'city' => 'required',
-                'address' => 'required',
+        //         'code' => 'required',
+        //         'city' => 'required',
+        //         'address' => 'required',
 
-            ], Pos::dbRules())
-        ));
+        //     ], Pos::dbRules())
+        // ));
 
-        if ($validation->fails()) {
+        // if ($validation->fails()) {
 
-            return [
+        //     return [
 
-                'Status' => 'error',
-                'Errors' => $validation->errors()
-            ];
-        }
+        //         'Status' => 'error',
+        //         'Errors' => $validation->errors()
+        //     ];
+        // }
 
 
         //update pos on devpos
-        $item = DevPos::updatePOS($id, $request->all());
+        $item = DevPos::pos()->update($id, $request->all());
 
         //validate the request before we 
-        $updated = Pos::findOrFail($id)->update($request->all());
+        //$updated = Pos::findOrFail($id)->update($request->all());
 
         return response()->json([
 

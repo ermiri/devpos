@@ -5,6 +5,7 @@ namespace ErmirShehaj\DevPos\Classes;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Cookie;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -13,10 +14,11 @@ use ErmirShehaj\DevPos\Facades\DevPos;
 
 abstract class Model {
 
-    protected $endPointBase = 'https://demo.devpos.al';
-    protected $endPoint = 'https://demo.devpos.al/api/v3';
-    protected $tokenEndPoint = 'https://demo.devpos.al/connect/token';
+    protected $endPointBase = 'https://online.devpos.al';
+    protected $endPoint = 'https://online.devpos.al/api/v3';
+    protected $tokenEndPoint = 'https://online.devpos.al/connect/token';
     protected $path;
+    protected $timeout = 30;
 
     /**
      * Configurations
@@ -30,6 +32,8 @@ abstract class Model {
     protected $bypass_cache = false; //if we have data in cache => it mean we will read from it => st bypass_cache to false to bypass it and read directly from source.
 
     protected $on_fail_cached = false; //if we can't get/fetch data from devpos then we will serve our cache data.
+
+    protected $callback = null; //function($obj, $response) {}; //run this function after post/put/delete/get/download etc
 
     public function __construct() {
 
@@ -81,7 +85,7 @@ abstract class Model {
 
         return $this->path;
     }
-    public function getAbsolutePath($path = null) {  // e.g: https://demo.devpos.al/api/v3/Customer
+    public function getAbsolutePath($path = null) {  // e.g: https://online.devpos.al/api/v3/Customer
 
         $path = $path ?? $this->getPath();
         if (empty(parse_url($path, PHP_URL_HOST))) {
@@ -90,6 +94,17 @@ abstract class Model {
         }
 
         return $path;
+    }
+
+    public function setTimeout($timeout) {
+
+        $this->timeout = $timeout;
+        return $this;
+    }
+
+    public function getTimeout() {
+
+        return $this->timeout;
     }
 
 
@@ -200,6 +215,24 @@ abstract class Model {
         return $this->cache_timeout;
     }
 
+    public function setCallback($fn) {
+
+        $this->callback = $fn;
+        return $this;
+    }
+
+    public function getCallback() {
+
+        return $this->callback;
+    }
+
+    public function callback($fn) {
+
+        return $this->setCallback($fn);
+    }
+
+
+
 
     /**
      * Cache operations: put, get, forget
@@ -218,6 +251,7 @@ abstract class Model {
         //lets get the key we will store 
         $key = $this->getCacheKeyWithPrefix();
         //echo 'We are putting in the cache with key: '. $key;
+        file_put_contents(dirname(__FILE__) .'/cache_logs.txt', $this->getAbsolutePath() .': '. $key . "\n", FILE_APPEND);
 
         Cache::put($key, $val, $this->getCacheTimeout());
         return $this;
@@ -237,6 +271,16 @@ abstract class Model {
 
         return Cache::forget($key);
     }
+
+    protected function clearCacheByPath($path) {
+
+        $key = md5($this->getAbsolutePath($path));
+        if ($this->existsCache($this->getCacheKeyWithPrefix($key))) {
+
+            $this->forgetCache($this->getCacheKeyWithPrefix($key));
+        }
+    }
+
 
 
 
@@ -262,7 +306,7 @@ abstract class Model {
     }
 
     protected function httpGet($path) {
-        
+    
         return $this->setPath($path)->call('get', []);
     }
 
@@ -283,11 +327,13 @@ abstract class Model {
          * if it is relative => we will transform it to an absolute one. 
          */
 
-
+        
         //always check for token bc it is mandatory
         if (empty(DevPos::getToken())) {
 
             //load it from cache
+            // if (!empty(session()->get('devpos.access_token')))
+            //     DevPos::setToken(session()->get('devpos.access_token'));
             if (!empty(Cache::get('devpos.access_token')))
                 DevPos::setToken(Cache::get('devpos.access_token'));
             else {
@@ -304,24 +350,40 @@ abstract class Model {
 
         if ($action == 'post') {
 
-            $response = Http::withToken(DevPos::getToken())->post($path, $parameters);
+            $response = Http::withToken(DevPos::getToken())->timeout($this->getTimeout())->post($path, $parameters);
 
             //we clear cache if there exists one
             //we clear cache if there exists one
-            $directory = pathinfo($path, PATHINFO_DIRNAME); //path without: /id
+            if (strpos($path, 'TCRBalance') > 0) {
+
+                $directory = $path;
+            }
+            else {
+
+                $directory = pathinfo($path, PATHINFO_DIRNAME); //path without: /id
+            }
             $key = md5($directory);
             if ($this->existsCache($this->getCacheKeyWithPrefix($key))) {
 
                 $this->forgetCache($this->getCacheKeyWithPrefix($key));
             }
 
-            if ($response->status() == 201)
+            if ($response->status() == 201) {
+
+                //latesly we runthe callback
+                $this->callback($this, $response->json());
+
                 return $response->json();
+            }
+            elseif ($response->status() == 500) {
+
+                return ['response' => $response->getBody()->getContents(), 'parameters' => $parameters];
+            }
 
         }
         else if($action == 'put') {
 
-            $response = Http::withToken(DevPos::getToken())->put($path, $parameters);
+            $response = Http::withToken(DevPos::getToken())->timeout($this->getTimeout())->put($path, $parameters);
 
             //we clear cache if there exists one
             $directory = pathinfo($path, PATHINFO_DIRNAME); //path without: /id
@@ -346,7 +408,6 @@ abstract class Model {
                 $this->forgetCache($this->getCacheKeyWithPrefix($key));
             }
         }
-        
         elseif ($action == 'get') {
 
             //before we run http request to our api endpoint, we check if we have them on cache
@@ -358,14 +419,14 @@ abstract class Model {
                 return $this->readCache($this->getCacheKeyWithPrefix());
             }
 
-
-            $response = Http::withToken(DevPos::getToken())->get($path);
+            //return $path;
+            $response = Http::withToken(DevPos::getToken())->timeout($this->getTimeout())->get($path);
 
         }
         
         elseif ($action == 'download') {
 
-            $response = Http::withToken(DevPos::getToken())->get($path);
+            $response = Http::withToken(DevPos::getToken())->timeout($this->getTimeout())->get($path);
 
             return $response->getBody()->getContents();
         }

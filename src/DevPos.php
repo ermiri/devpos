@@ -290,6 +290,10 @@ class DevPos {
 
         return new \ErmirShehaj\DevPos\Classes\EInvoice();
     }
+    public function epurchaseinvoice() {
+
+        return new \ErmirShehaj\DevPos\Classes\EPurchaseInvoice();
+    }
     public function accompanyingInvoice() {
 
         return new \ErmirShehaj\DevPos\Classes\AccompanyingInvoice();
@@ -321,6 +325,11 @@ class DevPos {
     public function clientCard() {
 
         return new \ErmirShehaj\DevPos\Classes\ClientCard();
+    }
+
+    public function bankPayment() {
+
+        return new \ErmirShehaj\DevPos\Classes\BankPayment();
     }
 
 

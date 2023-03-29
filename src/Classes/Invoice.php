@@ -6,6 +6,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Cache;
 use ErmirShehaj\DevPos\Facades\DevPos;
 
 use ErmirShehaj\DevPos\Classes\Model;
@@ -39,11 +40,15 @@ class Invoice extends Model {
         if (!empty(request()->query('tcrCode')))
             $path .= '&tcrCode='. request()->query('tcrCode');
 
+        if (!empty(request()->query('PaymentMethodType')))
+            $path .= '&PaymentMethodType='. request()->query('PaymentMethodType');
+
         return $this->httpGet($path);
     }
 
     public function create($parameters = [], $path = '/api/v3/Invoice') {
 
+        //return $parameters;
         $defaults = [
 
             'id' => 0,
@@ -51,7 +56,7 @@ class Invoice extends Model {
             'warehouseId' => NULL,
             'selfIssuingType' => NULL,
             'isSimplifiedInvoice' => false,
-            'tcrCode' => 'wi923ef455',
+            'tcrCode' => '',
             'markUpAmount' => 0,
             'goodsExport' => 0,
             'isReverseCharge' => false,
@@ -219,12 +224,9 @@ class Invoice extends Model {
 
         //first we have to check if tcr_code is declared 
       
-        if (!DevPos::tcr()->isBalanceDeclared()) {
+        //return $parameters;
 
-            throw new Exception('You have to declare first the tcr!');
-        }
-
-
+       
         //get taxpayer
         $taxPayer = DevPos::taxPayer()->get();
 
@@ -232,9 +234,22 @@ class Invoice extends Model {
         $parameters['businessUnitCode'] = $taxPayer['businessUnitCode'];
 
         //add tcr_code
-        $parameters['tcrCode'] = session()->get('tcr.fiscalizationNumber');
-        $parameters['tcrId'] = session()->get('tcr.id');
-        
+        $parameters['tcrCode'] = $parameters['tcrCode'] ?? session()->get('tcr.fiscalizationNumber');
+        $parameters['tcrId'] = $parameters['tcrId'] ?? session()->get('tcr.id');
+
+        $parameters['isEInvoice'] = false;
+        $parameters['isSelfIssuingAffectWareHouse'] = false;
+
+        // return [
+        //     $parameters['tcrCode'] => DevPos::tcr()->isBalanceDeclared($parameters['tcrCode']),
+        //     'token' => Cache::get('devpos.access_token'),
+        //     'session' => session()->all()
+        // ];
+        if (!DevPos::tcr()->isBalanceDeclared($parameters['tcrCode'])) {
+
+            //return ['isBalanceDeclared'];
+            throw new \Exception('You have to declare first the tcr! => '. $parameters['tcrCode']);
+        }
 
 
         //do some validations
@@ -266,14 +281,14 @@ class Invoice extends Model {
             'orderIICRef' => 'nullable|list:string', 
             'notes' => 'nullable|string|max:100', 
 
-            'customer' => 'required_with:isEInvoice,selfIssuingType|array', 
+            'customer' => 'nullable|array', 
                 'customer.idNumber' => 'required_with:customer|string|max:20',
                 'customer.idType' => 'required_with:customer|numeric', //['NIPT', 'Kartë identiteti', 'Numri i pasaportës', 'Numri i TVSH', 'Numri i Tatimit', 'Numri i sigurimeve shoqërore']
                 'customer.name' => 'required_with:customer|string|max:200',
                 'customer.address' => 'required_with:customer|string|max:400',
                 'customer.town' => 'required_with:customer|string|max:200',
                 
-            'subsequentDeliveryType' => 'in:0,1,2,3', //['Mungesë interneti', 'Arka është jashtë funksionit', 'Probleme me shërbimin e fiskalizimit', 'Probleme teknike në arkë']
+            'subsequentDeliveryType' => 'nullable|in:0,1,2,3', //['Mungesë interneti', 'Arka është jashtë funksionit', 'Probleme me shërbimin e fiskalizimit', 'Probleme teknike në arkë']
 
             'invoiceProducts' => 'required|array',
                 'invoiceProducts.*.name' => 'required|string|max:100',
@@ -314,7 +329,6 @@ class Invoice extends Model {
 
         if($validation->fails()) {
 
-
             throw new \Illuminate\Validation\ValidationException($validation);
         }
 
@@ -346,7 +360,7 @@ class Invoice extends Model {
         }
 
 
-        //print_r($parameters);
+        //return $parameters;
 
         return $this->post($path, $parameters);
     }
@@ -411,7 +425,7 @@ class Invoice extends Model {
         return $this->put('/api/v3/Invoice/CancelInvoice?IIC='. $iic, []);
     }
 
-    public function resendeinvoice($iic) {
+    public function resend($iic) {
 
         //do some validations
         $validation = Validator::make(['iic' => $iic], [
@@ -424,7 +438,7 @@ class Invoice extends Model {
             throw new \Illuminate\Validation\ValidationException($validation);
         }
 
-        return $this->put('/api/v3/Invoice/resendeinvoice/'. $iic, []);
+        return $this->put('/api/v3/Invoice/resendinvoice/'. $iic, []);
     }
 
     //list unfiscalized invoices
@@ -464,6 +478,30 @@ class Invoice extends Model {
 
             //     echo $this->download($path);
             // }, 'invoices.csv');
+        }
+        else {
+
+            return file_get_contents($path);
+        }
+    }
+
+    //if download is true it will download it otherwise it will return its content
+    public function exportSalesBook($params = [], $download = true) {
+
+        $queryString = http_build_query($params);
+        $path = '/api/v3/SalesReports/exportSalesBook'. (!empty($queryString) ? '?'. $queryString:'');
+        //echo $this->download($path);
+
+        if ($download) {
+
+            $file = $this->download($path);
+            $headers = [
+                'Content-Disposition' => 'attachment; filename=invoicesSalesBook.csv;'
+            ];
+
+            return response()->stream(function () use ($file)  { 
+                echo $file;
+            }, 200, $headers);
         }
         else {
 

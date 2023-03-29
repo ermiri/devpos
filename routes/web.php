@@ -14,6 +14,7 @@ use ErmirShehaj\DevPos\Facades\DevPos;
     Route::put('/invoices/{iic}/correct', '\ErmirShehaj\DevPos\Http\Controllers\InvoiceController@correct', ['as' => 'devpos']);
     Route::get('/invoices/export', '\ErmirShehaj\DevPos\Http\Controllers\InvoiceController@export', ['as' => 'devpos']);
     Route::resource('/invoices', \ErmirShehaj\DevPos\Http\Controllers\InvoiceController::class, ['as' => 'devpos']);
+    Route::resource('/epurchase-invoices', \ErmirShehaj\DevPos\Http\Controllers\EPurchaseInvoiceController::class, ['as' => 'devpos']);
     Route::resource('/einvoices', \ErmirShehaj\DevPos\Http\Controllers\EInvoiceController::class, ['as' => 'devpos']);
     
     Route::get('/unfiscalized/export', '\ErmirShehaj\DevPos\Http\Controllers\UnfiscalizedController@export', ['as' => 'devpos']);
@@ -52,6 +53,8 @@ use ErmirShehaj\DevPos\Facades\DevPos;
     Route::resource('/warehouses', \ErmirShehaj\DevPos\Http\Controllers\WareHouseController::class, ['as' => 'devpos']);
     Route::resource('/currencies', \ErmirShehaj\DevPos\Http\Controllers\CurrencyController::class, ['as' => 'devpos']);
     Route::resource('/taxpayer', \ErmirShehaj\DevPos\Http\Controllers\TaxPayerController::class, ['as' => 'devpos']);
+
+    Route::resource('/bank-payments', \ErmirShehaj\DevPos\Http\Controllers\BankPaymentController::class, ['as' => 'devpos']);
 
     Route::get('/test', function() {
 

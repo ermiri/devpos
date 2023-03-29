@@ -18,7 +18,7 @@ use ErmirShehaj\DevPos\Classes\Model;
  * DevPos::tcr()->setCacheKey('key')->list();
  */
 
-class EInvoice extends Model {
+class EPurchaseInvoice extends Model {
 
 
     public function __construct() {
@@ -33,25 +33,11 @@ class EInvoice extends Model {
     //list all tcr saved on devpos
     public function get() {
         
-        $path = '/api/v3/EInvoice';
+        $path = '/api/v3/EInvoice/GetPurchaseInvoice';
        
         $query = http_build_query(request()->all());
        
         $query = !empty($query) ? '?'. $query:$query;
-
-       // echo $path . $query;
-
-       if (request()->input('isPurchase') == 'true') {
-
-        $path .= '/GetPurchaseInvoice';
-       }
-       else {
-
-        $path .= '/GetSalesInvoice';
-       }
-
-       //echo $path . $query;
-       //dd(request()->all());
 
         return $this->httpGet($path . $query);
     
@@ -151,8 +137,8 @@ class EInvoice extends Model {
         $parameters['businessUnitCode'] = $taxPayer['businessUnitCode'];
 
         //add tcr_code
-        $parameters['tcrCode'] = session()->get('tcr.fiscalizationNumber');
-        $parameters['tcrId'] = session()->get('tcr.id');
+        $parameters['tcrCode'] = session()->httpGet('tcr.fiscalizationNumber');
+        $parameters['tcrId'] = session()->httpGet('tcr.id');
 
         //isEInvoice is required, so we put it manually
         $parameters['isEInvoice'] = boolval($parameters['isEInvoice'] ?? 1);

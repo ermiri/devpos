@@ -31,8 +31,8 @@ class TCR extends Model {
         parent::__construct();
 
         // //we will use 'tcr' as cache key for TCR.|||| Dont forget that we use prefix: devpos
-        // $this->setCache(true);
-        // $this->setCacheKey('tcr');
+        //$this->setCache(false);
+        //$this->setCacheKey('tcr');
     }
 
     public function get() {
@@ -42,9 +42,6 @@ class TCR extends Model {
 
     public function create($parameters = []) {
 
-        //add default data
-        $parameters['businessUnitCode'] = DevPos::taxpayer()->get()['businessUnitCode'];
-        
         //first we validate the tcr
         //do some validations
         $validation = Validator::make($parameters, [
@@ -126,7 +123,7 @@ class TCR extends Model {
     //list all tcr
     public function listActiveTCR() {
 
-        $this->httpGet('/api/v3/TCR/activeTCR');
+        $this->setCache(false)->httpGet('/api/v3/TCR/activeTCR');
     }
 
     //Update TCR Balance
@@ -167,8 +164,8 @@ class TCR extends Model {
 
     public function isBalanceDeclared($tcr_code = null) {
 
-        ///where $tcr_code is something like: fu087lt613
-
+        //where $tcr_code is something like: fu087lt613
+      
         if (is_null($tcr_code)) {
 
             //check for choosed tcr, saved on cache
@@ -178,8 +175,9 @@ class TCR extends Model {
         if (empty($tcr_code))
             throw new \Exception('You have to choose first the tcr than check if it is declare!');
 
-        $response = $this->httpGet('/api/v3/TCR/IsBalanceDeclared/'. $tcr_code);
-
+        //return '/api/v3/TCR/IsBalanceDeclared/'. $tcr_code;
+        $response = $this->setCache(false)->bypassCache()->httpGet('/api/v3/TCR/IsBalanceDeclared/'. $tcr_code);
+   
         if ($response == 'true')
             return true;
         return false;
@@ -318,7 +316,7 @@ class TCR extends Model {
          *
          */
 
-        return $this->httpGet('/api/v3/Report/'. $tcr_code);
+        return $this->setCache(false)->httpGet('/api/v3/Report/'. $tcr_code);
     }
 
     public function unfiscalizedBalances() {

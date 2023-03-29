@@ -107,8 +107,9 @@
                                         <th style="padding: 5px 10px;text-align: center;">#</th>
                                         <th style="padding: 5px 10px;text-align: center;text-transform: uppercase">{{__('Name')}}</th>
                                         <th style="padding: 5px 10px;text-align: center;text-transform: uppercase">{{__('Barcode')}}</th>
-                                        <th style="padding: 5px 10px;text-align: center;text-transform: uppercase">{{__('Unit')}}</th>
+                                        <th style="padding: 5px 10px;text-align: center;text-transform: uppercase">{{__('Price')}}</th>
                                         <th style="padding: 5px 10px;text-align: right;text-transform: uppercase">{{__('Sasia')}}</th>
+                                        <th style="padding: 5px 10px;text-align: center;text-transform: uppercase">{{__('Unit')}}</th>
                                         <th style="padding: 5px 10px;text-align: right;text-transform: uppercase">{{__('Cmimi me TVSH')}}</th>
                                         <th style="padding: 5px 10px;text-align: right;text-transform: uppercase">{{__('Vlefta pa TVSH')}}</th>
                                         <th style="padding: 5px 10px;text-align: right;text-transform: uppercase">{{__('TVSH')}}</th>
@@ -122,8 +123,9 @@
                                                 <td style="padding: 5px;text-align: center;">{{$loop->index + 1}}</td>
                                                 <td style="padding: 5px 10px;text-align: center;">{{$product['name']}}</td>
                                                 <td style="padding: 5px 10px;text-align: center;">{{$product['barcode']}}</td>
-                                                <td style="padding: 5px 10px;text-align: center;">{{$product['unit']}}</td>
+                                                <td style="padding: 5px 10px;text-align: center;">{{$product['unitPrice']}}</td>
                                                 <td style="padding: 5px 10px;text-align: right;">{{$product['quantity']}}</td>
+                                                <td style="padding: 5px 10px;text-align: center;">{{$product['unit']}}</td>
                                                 <td style="padding: 5px 10px;text-align: right;">{{priceNum($product['priceAfterVAT'])}}</td>
                                                 <td style="padding: 5px 10px;text-align: right;">{{priceNum($product['totalPriceBeforeVAT'])}}</td>
                                                 <td style="padding: 5px 10px;text-align: right;">{{priceNum($product['totalPriceAfterVAT'] - $product['totalPriceBeforeVAT'])}}</td>
@@ -169,8 +171,11 @@
 
 @section('js-local')
 
-    <script src="{{ asset('assets\vendors\custom\jquery-qrcode\jquery.qrcode.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('assets\vendors\custom\jquery-qrcode\qrcode.js') }}" type="text/javascript"></script>
+    <script src="/api/dev/public/devpos\assets\js\jquery-qrcode\jquery.qrcode.js" type="text/javascript"></script>
+    <script src="/api/dev/public/devpos\assets\js\jquery-qrcode\qrcode.js" type="text/javascript"></script>
+
+    <script src="{{asset('ermirshehaj/devpos/js/devpos.js')}}"></script>
+    <script src="{{asset('ermirshehaj/devpos/js/templates.js')}}"></script>
 
     <script>
 

@@ -5,8 +5,8 @@
     <div class="k-subheader__toolbar">
         <div class="k-subheader__wrapper">
 
-            @can('create', App\Models\POS::class)
-                <a href="javascript:void(0);" class="btn btn-label btn-label-brand btn-bold" title="Edit" data-placement="top" onClick="DevPos.POS.create();">
+            @can('create', App\Models\Brand::class)
+                <a href="javascript:void(0);" class="btn btn-label btn-label-brand btn-bold" title="Edit" data-placement="top" onClick="POS.create();">
                     <i class="fa fa-plus"></i> <span class="d-none d-md-inline"> {{ __('POS') }}</span>
                 </a>
             @endcan
@@ -61,7 +61,7 @@
                         <div class="k-portlet__body">
                             <div class="row" id="filterForm" data-filter-itemType="pos">
 
-                                <form name="filter" class="col-12" onsubmit="event.preventDefault();DevPos.POS.load();">
+                                <form name="filter" class="col-12" onsubmit="event.preventDefault();POS.load();">
 
                                     <div class="form-group">
                                         <label class="">{{ __('Code') }}</label>
@@ -115,6 +115,9 @@
 @endsection
 
 @section('js-local')
+
+    <script src="{{asset('ermirshehaj/devpos/js/devpos.js')}}"></script>
+    <script src="{{asset('ermirshehaj/devpos/js/templates.js')}}"></script>
 
     <script>
 

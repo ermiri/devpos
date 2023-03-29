@@ -4,9 +4,9 @@
 
     <div class="k-subheader__toolbar">
         <div class="k-subheader__wrapper">
-
-            <a href="{{route('devpos.einvoices.create')}}" class="btn btn-label btn-label-brand btn-bold" title="Edit" data-placement="top">
-                <i class="fa fa-plus"></i> <span class="d-none d-md-inline"> {{ __('Purchase Invoice') }}</span>
+            
+            <a href="javascript:void(0);" class="btn btn-label btn-label-brand btn-bold" title="{{ __('Export') }}" data-placement="top" onClick="DevPos.EPurchaseInvoice.export();">
+                <i class="fa fa-download"></i> <span class="d-none d-md-inline"> {{ __('Export') }}</span>
             </a>
             
         </div>
@@ -48,7 +48,7 @@
                                             <label class="">{{ __('Created at') }}</label>
                                             
                                             <div class="input-daterange input-group" id="k_datepicker_5">
-                                                <input type="text" class="form-control " name="fromDate" autocomplete="off" placeholder="{{ __('Min date') }} ..." value="{{date('Y-m-d', strtotime('-1 week'))}}">
+                                                <input type="text" class="form-control " name="fromDate" autocomplete="off" placeholder="{{ __('Min date') }} ..." value="{{date('Y-m-d', strtotime('-1 month'))}}">
                                                 <div class="input-group-append">
                                                     <span class="input-group-text"><i class="la la-ellipsis-h"></i></span>
                                                 </div>
@@ -66,21 +66,6 @@
                                                     <span class="input-group-text"><i class="la la-ellipsis-h"></i></span>
                                                 </div>
                                                 <input type="text" class="form-control" name="valueTo" autocomplete="off" placeholder="{{ __('Max value') }} ..." >
-                                            </div>
-                                            
-                                        </div>
-
-                                        <div class="col-md-4 col-xl-3">
-                                            <label class="">{{ __('Status') }}</label>
-                                            
-                                            <div class="input-daterange input-group" id="k_datepicker_5">
-                                                <select type="text" class="form-control " name="status" >
-
-                                                    @foreach($eInvoiceStatuses as $status)
-                                                        <option value="{{ $status }}">{{ $status }}</option>
-                                                    @endforeach
-
-                                                </select>
                                             </div>
                                             
                                         </div>
@@ -153,12 +138,12 @@
                                         <input class="form-control" name="documentNumber" type="text" placeholder="Search by document number">
                                     </div>
                                     <div class="form-group">
-                                        <label class="">{{ __('Buyer Name') }}</label>
-                                        <input class="form-control" name="buyerName" type="text" placeholder="Search by buyer name">
+                                        <label class="">{{ __('Seller Name') }}</label>
+                                        <input class="form-control" name="sellerName" type="text" placeholder="Search by seller name">
                                     </div>
                                     <div class="form-group">
-                                        <label class="">{{ __('Buyer Nuis') }}</label>
-                                        <input class="form-control" name="buyerNuis" type="text" placeholder="Search by buyer nuis">
+                                        <label class="">{{ __('Seller Nuis') }}</label>
+                                        <input class="form-control" name="sellerNuis" type="text" placeholder="Search by seller nuis">
                                     </div>
                                     <div class="form-group">
                                         <label class="">{{ __('EIC') }}</label>
@@ -205,20 +190,6 @@
                                         <span class="form-text text-muted">{{ __('Enter min and max date range') }}</span> 
                                         
                                     </div>
-                                    <div class="form-group">
-
-                                        <label class="">{{ __('Created at') }}</label>
-                                        
-                                        <div class="input-daterange input-group" id="k_datepicker_5">
-                                            <input type="text" class="form-control " name="created_min" placeholder="{{ __('Min date') }} ...">
-                                            <div class="input-group-append">
-                                                <span class="input-group-text"><i class="la la-ellipsis-h"></i></span>
-                                            </div>
-                                            <input type="text" class="form-control" name="created_max" placeholder="{{ __('Max date') }} ...">
-                                        </div>
-                                        <span class="form-text text-muted">{{ __('Enter min and max date range') }}</span> 
-                                        
-                                    </div>
                                     <div class="k-input-icon k-input-icon--left">
                                         <input type="submit" class="btn btn-primary btn-sm w-100" name="name" value="{{ __('Filter') }}">
                                     </div>
@@ -248,6 +219,9 @@
 
 @section('js-local')
 
+    <script src="{{asset('ermirshehaj/devpos/js/devpos.js')}}"></script>
+    <script src="{{asset('ermirshehaj/devpos/js/templates.js')}}"></script>
+
     <script>
 
         //put all tcrs to cache
@@ -273,6 +247,24 @@
                 format: 'yyyy-mm-dd'
             });
             $('[name="toDate"]').datepicker({
+
+                format: 'yyyy-mm-dd'
+            });
+
+            $('[name="created_min"]').datepicker({
+
+                format: 'yyyy-mm-dd'
+            });
+            $('[name="created_max"]').datepicker({
+
+                format: 'yyyy-mm-dd'
+            });
+
+            $('[name="dueDate_min"]').datepicker({
+
+                format: 'yyyy-mm-dd'
+            });
+            $('[name="dueDate_max"]').datepicker({
 
                 format: 'yyyy-mm-dd'
             });

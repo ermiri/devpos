@@ -22,6 +22,8 @@
 
         <div class="row">	
 
+            @if(Session::get('tcr.fiscalizationNumber'))
+
             <div class="col-md-12 float-left reportAndListing order-xs-2 order-md-1" id="reportAndListing" style="overflow-x: hidden;">
                 <div class="k-portlet k-portlet--mobile">
                     <div class="k-portlet__head k-portlet__head--lg">
@@ -209,7 +211,7 @@
 										"input" => [
 
 											"name" => "customer[address]",
-											"value" => $item->address,
+											"value" => $item->address ?? 'Tirane',
 											"placeholder" => "Enter address",
 										]
 										
@@ -222,7 +224,7 @@
 										"input" => [
 
 											"name" => "customer[town]",
-											"value" => $item->town,
+											"value" => $item->town ?? 'Tirane',
 											"placeholder" => "Enter town",
 										]
 										
@@ -235,7 +237,7 @@
 										"select" => [
 
 											"name" => "customer[country]",
-											"value" => $item->country,
+											"value" => $item->country ?? '4',
 											"placeholder" => "Enter country",
 											"attributes" => ['data-live-search' => true],
 											"options" => $countries ?? []
@@ -777,6 +779,9 @@
                     </div>
                 </div>
             </div>
+            @else
+               Duhet te zgjidhni ne fillim arken pastaj mund te shtoni fature elektronike
+            @endif
 
         </div>
     </div>
@@ -785,6 +790,9 @@
 @endsection
 
 @section('js-local')
+
+    <script src="{{asset('ermirshehaj/devpos/js/devpos.js')}}"></script>
+    <script src="{{asset('ermirshehaj/devpos/js/templates.js')}}"></script>
 
     <script>
 
@@ -797,6 +805,8 @@
         Cache.put('cities', @php echo json_encode($cities) @endphp);
         Cache.put('banks', @php echo json_encode($banks) @endphp);
         Cache.put('idTypes', @php echo json_encode($idTypes) @endphp);
+        
+        Cache.put('products', @php echo json_encode($products) @endphp);
 
         Cache.put("devpos_access_token", '{{Cache::get('devpos.access_token')}}' );
 
@@ -814,7 +824,16 @@
             });
 
             $('#productSearch').productSuggestionThumb({
-	
+                
+                display: 'title',
+                source: function(instance, query, sync, async) {
+
+                    return async(Cache.get('products').filter(row => row.title.toLowerCase().startsWith(query)));
+                },
+                template: function(data) {
+
+                    return '<a href="javascript:void(0)" title="Add unit" class="k-nav__link" onClick=""><i class="k-nav__link-icon fa fa-plus "></i><span class="k-nav__link-text"> '+ data.title +'</span></a>';
+                },
                 onSelect: function(suggestion, instance) {
 
                     //add product to List
@@ -829,6 +848,9 @@
                     }
                     else { //we append it as new row
 
+                        //fix properties before we add it
+                        suggestion.name = suggestion.title;
+                        suggestion.rate = suggestion.price;
                         $(instance).closest('form').find('#productsList tbody').append(DevPos.Invoice.order.product.row(suggestion));
                     }
 

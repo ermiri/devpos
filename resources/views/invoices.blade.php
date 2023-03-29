@@ -11,6 +11,9 @@
             <a href="javascript:void(0);" class="btn btn-label btn-label-brand btn-bold" title="{{ __('Export') }}" data-placement="top" onClick="DevPos.Invoice.export();">
                 <i class="fa fa-download"></i> <span class="d-none d-md-inline"> {{ __('Export') }}</span>
             </a>
+            <a href="javascript:void(0);" class="btn btn-label btn-label-brand btn-bold" title="{{ __('Export') }}" data-placement="top" onClick="DevPos.Invoice.exportSalesBook();">
+                <i class="fa fa-download"></i> <span class="d-none d-md-inline"> {{ __('Export Sales Book') }}</span>
+            </a>
             
         </div>
     </div>
@@ -49,7 +52,14 @@
 
                                         <div class="col-md-4 col-xl-2">
                                             <label class="">{{ __('Customer') }}</label>
-                                            <input class="form-control" name="client" type="text" placeholder="Search by customer">
+                                            <select name="client" class="form-control">
+                                                <option value=""></option>
+                                                @foreach($customers as $customer)
+
+                                                <option value="{{$customer['id']}}">{{ $customer['name'] }}</option>
+
+                                                @endforeach
+                                            </select>
                                         </div>
 
                                         <div class="col-md-6 col-xl-4">
@@ -77,7 +87,7 @@
                                         </div>
                                         <div class="col-md-4 col-xl-2">
                                             <label class="">{{ __('Payment Method') }}</label>
-                                            <select name="tcr" class="form-control">
+                                            <select name="PaymentMethodType" class="form-control">
                                                 <option value=""></option>
                                                 @foreach($paymentMethods as $method)
 
@@ -158,6 +168,56 @@
                                         <label class="">{{ __('Customer Business Name') }}</label>
                                         <input class="form-control" name="customerBusinessName" type="text" placeholder="Search by business">
                                     </div>
+                                    <div class="form-group">
+                                        <label class="">{{ __('Invoice Number') }}</label>
+                                        <input class="form-control" name="invoiceNumber" type="text" placeholder="Search by invoice number">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="">{{ __('Invoice Type') }}</label>
+                                        <select class="form-control" name="invoiceType">
+                                            <option value=""></option>
+                                            <option value="0">Cash</option>
+                                            <option value="1">Non Cash</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="">{{ __('Invoice Category') }}</label>
+                                        <select class="form-control" name="invoiceCategory">
+                                            <option value=""></option>
+                                            <option value="Invoice">Invoice</option>
+                                            <option value="EInvoice">EInvoice</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="">{{ __('Invoice Status') }}</label>
+                                        <select class="form-control" name="invoiceStatus">
+                                            <option value=""></option>
+                                            <option value="sended_to_state">Fiscalized</option>
+                                            <option value="not_sended_to_state">Not sended to state</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="">{{ __('Product') }}</label>
+                                        <select class="form-control selectpicker" name="products" multiple data-live-search="true">
+                                       
+                                            @foreach($products as $product) 
+
+                                                <option value="{{$product->title}}">{{$product->title}}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="">{{ __('Patient') }}</label>
+                                        <input class="form-control" name="patient" type="text" placeholder="Search by patient">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="">{{ __('Invoice') }}</label>
+                                        <input class="form-control" name="invoice_id" type="text" placeholder="Search by invoice">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="">{{ __('Note') }}</label>
+                                        <input class="form-control" name="note" type="text" placeholder="Search by note">
+                                    </div>
 
                                     <div class="form-group">
 
@@ -169,20 +229,6 @@
                                                 <span class="input-group-text"><i class="la la-ellipsis-h"></i></span>
                                             </div>
                                             <input type="text" class="form-control" name="total_max" placeholder="{{ __('Max total') }} ...">
-                                        </div>
-                                        <span class="form-text text-muted">{{ __('Enter min and max date range') }}</span> 
-                                        
-                                    </div>
-                                    <div class="form-group">
-
-                                        <label class="">{{ __('Created at') }}</label>
-                                        
-                                        <div class="input-daterange input-group" id="k_datepicker_5">
-                                            <input type="text" class="form-control " name="created_min" placeholder="{{ __('Min date') }} ...">
-                                            <div class="input-group-append">
-                                                <span class="input-group-text"><i class="la la-ellipsis-h"></i></span>
-                                            </div>
-                                            <input type="text" class="form-control" name="created_max" placeholder="{{ __('Max date') }} ...">
                                         </div>
                                         <span class="form-text text-muted">{{ __('Enter min and max date range') }}</span> 
                                         
@@ -216,9 +262,13 @@
 
 @section('js-local')
 
+    <script src="{{asset('ermirshehaj/devpos/js/devpos.js')}}"></script>
+    <script src="{{asset('ermirshehaj/devpos/js/templates.js')}}"></script>
+
     <script>
 
         //put all tcrs to cache
+        //Cache.put('invoices', @php echo json_encode($items) @endphp);
 
         Cache.put('paymentMethods', @php echo json_encode($paymentMethods) @endphp);
         Cache.put('feeTypes', @php echo json_encode($feeTypes) @endphp);
@@ -229,6 +279,8 @@
         Cache.put('cities', @php echo json_encode($cities) @endphp);
         Cache.put('banks', @php echo json_encode($banks) @endphp);
         Cache.put('idTypes', @php echo json_encode($idTypes) @endphp);
+        
+        Cache.put('products', @php echo json_encode($products) @endphp);
 
         Cache.put('devpos_access_token', '{{Cache::get('devpos.access_token')}}' );
 

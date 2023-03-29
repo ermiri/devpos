@@ -111,6 +111,8 @@
                     return static::image($opts['image']);
                 if(!empty($opts['gallery']))
                     return static::gallery($opts['gallery']);
+                if(!empty($opts['date']))
+                    return static::date($opts['date']);
                 
             }
     
@@ -195,6 +197,17 @@
                 />'. static::shown($opts['id'], $opts['shown']);
                 
                 return $html;
+            }
+
+            public static function date($opts) {
+    
+                
+                $opts['shown'] = "function(elm){
+    
+                    $(elm).datepicker({format: 'yyyy-mm-dd'});
+                }";
+    
+                return static::input($opts);
             }
     
             public static function combobox($opts = []) {
@@ -328,33 +341,40 @@
                 }
     
                 //convert options to string
-    
-                foreach($opts['options'] as $key => $val) {
-    
-                    if (is_string($val)) {
-    
-                        if(is_assoc($opts['options'])) { // when options: ['anije' => 4, makina => 32, 'motorr' => 242]
-    
-                            $options .= '<option value="'. $key .'" '. get_selected_option($key, $opts['value']) .'>'.  $val .'</option>';
+                //convert options to string
+                if (is_string($opts['options'])) {
+
+                    $options = $opts['options'];
+                }
+                else {
+
+                    foreach($opts['options'] as $key => $val) {
+
+                        if (is_string($val)) {
+
+                            if(is_assoc($opts['options'])) { // when options: ['anije' => 4, makina => 32, 'motorr' => 242]
+
+                                $options .= '<option value="'. $key .'" '. get_selected_option($key, $opts['value']) .'>'.  $val .'</option>';
+                            }
+                            else { //when options: ['anije', 'makine', 'motorr']
+
+                                $options .= '<option value="'. $val .'" '. get_selected_option($val, $opts['value']) .'>'.  $val .'</option>';
+                            }
                         }
-                        else { //when options: ['anije', 'makine', 'motorr']
-    
-                            $options .= '<option value="'. $val .'" '. get_selected_option($val, $opts['value']) .'>'.  $val .'</option>';
+                        elseif (is_object($val)) { //when options: [['ID' => '5', 'Name' => 'ermir'], ['ID' => '6', 'Name' => 'endri'], ] or when nested arrays are objects
+
+                            
+                            $options .= '<option value="'. $val->id .'" '. get_selected_option($val->id, $opts['value']) .'>'.  $val->name .'</option>';
                         }
-                    }
-                    elseif (is_object($val)) { //when options: [['ID' => '5', 'Name' => 'ermir'], ['ID' => '6', 'Name' => 'endri'], ] or when nested arrays are objects
-    
+                        else { //when options: [['ID' => '5', 'Name' => 'ermir'], ['ID' => '6', 'Name' => 'endri'], ] or when nested arrays are objects
+
+                            // if (is_object($val)) 
+                            // 	$val = (array)$val;
+
+                            $options .= '<option value="'. $val['id'] .'" '. get_selected_option($val['id'], $opts['value']) .'>'.  $val['name'] .'</option>';
+                        }
                         
-                        $options .= '<option value="'. $val->id .'" '. get_selected_option($val->id, $opts['value']) .'>'.  $val->name .'</option>';
                     }
-                    else { //when options: [['ID' => '5', 'Name' => 'ermir'], ['ID' => '6', 'Name' => 'endri'], ] or when nested arrays are objects
-    
-                        // if (is_object($val)) 
-                        // 	$val = (array)$val;
-    
-                        $options .= '<option value="'. $val['id'] .'" '. get_selected_option($val['id'], $opts['value']) .'>'.  $val['name'] .'</option>';
-                    }
-                    
                 }
     
                 //build html
@@ -812,6 +832,7 @@
             }
         }
     }
+    
 
     if (!function_exists('array_extend')) {
         
@@ -831,7 +852,6 @@
             return $base;
         }
     }
-    
 
     if (!function_exists('priceNum')) {
         
@@ -840,4 +860,13 @@
             if (is_numeric($number))
                 return number_format($number, 2, '.', ' ');
         } 
+    }
+
+    if (!function_exists('is_assoc')) {
+
+        function is_assoc($arr) {
+            
+            //return count(array_filter(array_keys($arr), 'is_string')) > 0;
+            return array_keys($arr) !== range(0, count($arr) - 1);
+        }
     }

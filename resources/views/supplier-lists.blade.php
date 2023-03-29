@@ -114,6 +114,9 @@
 
 @section('js-local')
 
+    <script src="{{asset('ermirshehaj/devpos/js/devpos.js')}}"></script>
+    <script src="{{asset('ermirshehaj/devpos/js/templates.js')}}"></script>
+
     <script>
 
         //put all suppliers to cache

@@ -5,6 +5,8 @@ namespace ErmirShehaj\DevPos;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Cookie;
 
 use Illuminate\Http\Request;
 
@@ -33,8 +35,8 @@ class DevPos {
         $this->setTenant(config('devpos.tenant'));
         $this->setAuthorization(config('devpos.authorization'));
 
-        $this->setUsername(config('devpos.username'));
-        $this->setPassword(config('devpos.password'));
+        $this->setUsername(Cookie::get('username') ?? config('devpos.username'));
+        $this->setPassword(Cookie::get('password') ?? config('devpos.password'));
         $this->setGrantType(config('devpos.grant_type'));
         
     }
@@ -268,6 +270,9 @@ class DevPos {
 
         Cache::put('devpos.access_token', $response['access_token'], (int)$response['expires_in']);
         
+        //session()->put('devpos.access_token', $response['access_token']);
+        //setcookie('devpos.access_token', $response['access_token'], time() + 48000 , "/");
+        
         return $response;
     }
 
@@ -349,13 +354,14 @@ class DevPos {
     }
     public function tcrBalance() {
 
+        
         return new \ErmirShehaj\DevPos\Classes\TCRBalance();
     }
 
     //create pos object
     public function pos() {
 
-        return new POS();
+        return new \ErmirShehaj\DevPos\Classes\POS();
     }
 
     //create operatore object

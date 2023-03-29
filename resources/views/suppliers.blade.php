@@ -114,13 +114,13 @@
 
 @section('js-local')
 
+    <script src="{{asset('ermirshehaj/devpos/js/devpos.js')}}"></script>
+    <script src="{{asset('ermirshehaj/devpos/js/templates.js')}}"></script>
+
     <script>
 
         //put all suppliers to cache
         Cache.put('suppliers', @php echo json_encode($items) @endphp);
-
-        //set all models
-        var modelsList = @php echo json_encode(getModels()); @endphp
 
         DevPos.Supplier.load();
     </script>

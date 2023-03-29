@@ -76,7 +76,7 @@ class InvoiceController extends Controller
         $idTypes = DevPos::enum()->getIdTypes();
         
         //get products
-        $products = DB::select('select * from price_list where Status = \'Active\'');
+        //$products = DB::select('select * from price_list where Status = \'Active\'');
 
         
         return view('devpos::invoices', [
@@ -99,7 +99,7 @@ class InvoiceController extends Controller
             'cities' => $cities,
             'banks' => $banks,
             'idTypes' => $idTypes,
-            'products' => $products,
+            'products' => [],
         ]);
     }
 

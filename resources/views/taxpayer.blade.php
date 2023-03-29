@@ -105,6 +105,9 @@
 
 @section('js-local')
 
+    <script src="{{asset('ermirshehaj/devpos/js/devpos.js')}}"></script>
+    <script src="{{asset('ermirshehaj/devpos/js/templates.js')}}"></script>
+
     <link rel="stylesheet" href="{{ asset('assets\custom\user\profile-v1.css') }}">
 
     <script>

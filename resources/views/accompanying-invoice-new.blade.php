@@ -85,7 +85,7 @@
                                     {!! Html::formElement([
 			
                                         "class" => "col-md-6 col-lg-4 col-xl-3 mb-3",
-                                        "label" => "POS",
+                                        "label" => "POS *",
                                         "select" => [
 
                                             "name" => "businessUnitCode",
@@ -109,7 +109,7 @@
                                     {!! Html::formElement([
 			
                                         "class" => "col-md-6 col-lg-4 col-xl-3 mb-3",
-                                        "label" => "Type",
+                                        "label" => "Type *",
                                         "select" => [
 
                                             "name" => "wtnType",
@@ -133,7 +133,7 @@
                                     {!! Html::formElement([
 			
                                         "class" => "col-md-6 col-lg-4 col-xl-3 mb-3",
-                                        "label" => "Transaction",
+                                        "label" => "Transaction *",
                                         "select" => [
 
                                             "name" => "transaction",
@@ -171,7 +171,7 @@
                                     {!! Html::formElement([
 			
                                         "class" => "col-md-6 col-lg-4 col-xl-3 mb-3",
-                                        "label" => "Vehicle Plate",
+                                        "label" => "Vehicle Plate *",
                                         "input" => [
 
                                             "name" => "vehiclePlate",
@@ -195,7 +195,7 @@
                                     {!! Html::formElement([
 			
                                         "class" => "col-md-6 col-lg-4 col-xl-3 mb-3",
-                                        "label" => "Start Address",
+                                        "label" => "Start Address *",
                                         "input" => [
 
                                             "name" => "startAddress",
@@ -208,7 +208,7 @@
                                     {!! Html::formElement([
 			
                                         "class" => "col-md-6 col-lg-4 col-xl-3 mb-3",
-                                        "label" => "Start City",
+                                        "label" => "Start City *",
                                         "input" => [
 
                                             "name" => "startCity",
@@ -221,7 +221,7 @@
                                     {!! Html::formElement([
 			
                                         "class" => "col-md-6 col-lg-4 col-xl-3 mb-3",
-                                        "label" => "Start Point",
+                                        "label" => "Start Point *",
                                         "select" => [
 
                                             "name" => "startPoint",
@@ -235,7 +235,7 @@
                                     {!! Html::formElement([
 			
                                         "class" => "col-md-6 col-lg-4 col-xl-3 mb-3",
-                                        "label" => "Start Date Time",
+                                        "label" => "Start Date Time *",
                                         "date" => [
 
                                             "name" => "startDateTime",
@@ -258,7 +258,7 @@
                                     {!! Html::formElement([
 			
                                         "class" => "col-md-6 col-lg-4 col-xl-3 mb-3",
-                                        "label" => "Destination Address",
+                                        "label" => "Destination Address *",
                                         "input" => [
 
                                             "name" => "destinationAddress",
@@ -271,7 +271,7 @@
                                     {!! Html::formElement([
 			
                                         "class" => "col-md-6 col-lg-4 col-xl-3 mb-3",
-                                        "label" => "Destination City",
+                                        "label" => "Destination City *",
                                         "input" => [
 
                                             "name" => "destinationCity",
@@ -284,7 +284,7 @@
                                     {!! Html::formElement([
 			
                                         "class" => "col-md-6 col-lg-4 col-xl-3 mb-3",
-                                        "label" => "Destination Point",
+                                        "label" => "Destination Point *",
                                         "select" => [
 
                                             "name" => "destinationPoint",
@@ -298,7 +298,7 @@
                                     {!! Html::formElement([
 			
                                         "class" => "col-md-6 col-lg-4 col-xl-3 mb-3",
-                                        "label" => "Destination Date Time",
+                                        "label" => "Destination Date Time *",
                                         "date" => [
 
                                             "name" => "destinationDateTime",
@@ -360,7 +360,7 @@
                                     {!! Html::formElement([
 			
                                         "class" => "col-md-12 mb-3",
-                                        "label" => "is Goods Flammable",
+                                        "label" => "is Goods Flammable *",
                                         "checkbox" => [
 
                                             "name" => "isGoodsFlammable",
@@ -374,7 +374,7 @@
                                     {!! Html::formElement([
 			
                                         "class" => "col-md-12 mb-3",
-                                        "label" => "Is Escort Required",
+                                        "label" => "Is Escort Required *",
                                         "checkbox" => [
 
                                             "name" => "isEscortRequired",
@@ -540,6 +540,10 @@
 
 @section('js-local')
 
+    <script src="{{asset('ermirshehaj/devpos/js/devpos.js')}}"></script>
+    <script src="{{asset('ermirshehaj/devpos/js/templates.js')}}"></script>
+
+
     <script>
 
         Cache.put('paymentMethods', @php echo json_encode($paymentMethods) @endphp);
@@ -551,6 +555,8 @@
         Cache.put('cities', @php echo json_encode($cities) @endphp);
         Cache.put('banks', @php echo json_encode($banks) @endphp);
         Cache.put('idTypes', @php echo json_encode($idTypes) @endphp);
+        
+        Cache.put('products', @php echo json_encode($products) @endphp);
 
         Cache.put("devpos_access_token", '{{Cache::get('devpos.access_token')}}' );
 
@@ -568,7 +574,16 @@
             });
 
             $('#productSearch').productSuggestionThumb({
-	
+                
+                display: 'title',
+                source: function(instance, query, sync, async) {
+
+                    return async(Cache.get('products').filter(row => row.title.toLowerCase().startsWith(query)));
+                },
+                template: function(data) {
+
+                    return '<a href="javascript:void(0)" title="Add unit" class="k-nav__link" onClick=""><i class="k-nav__link-icon fa fa-plus "></i><span class="k-nav__link-text"> '+ data.title +'</span></a>';
+                },
                 onSelect: function(suggestion, instance) {
 
                     //add product to List
@@ -582,7 +597,8 @@
                         $('#productsList [data-product-id="'+ suggestion.id +'"] [name="quantity"]').val(quantity + 1).change();
                     }
                     else { //we append it as new row
-
+                        suggestion.name = suggestion.title;
+                        suggestion.rate = suggestion.price;
                         $(instance).closest('form').find('#productsList tbody').append(DevPos.Invoice.order.product.row(suggestion));
                     }
 

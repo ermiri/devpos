@@ -30,3 +30,4 @@ https://online.devpos.al/assets/json/country.json: devpos.cbbb3c0f0fca70d9ffad71
 https://online.devpos.al/assets/json/cities.json: devpos.677ca1402f1ed87bc9f71ad2eebdaac4
 https://online.devpos.al/api/v3/Accounts: devpos.712a61e3279056eb8b01c0c45b44e00f
 https://online.devpos.al/assets/json/idTypes.json: devpos.058486512bb9256d5a716f9a0fef5abf
+https://online.devpos.al/api/v3/Customer: devpos.4b020847410aef38a18197a1c17ab92f

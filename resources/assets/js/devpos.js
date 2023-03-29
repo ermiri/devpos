@@ -9016,7 +9016,7 @@ var DevPos = {
 
             if (opts.item?.id) {
 
-                opts.title = `Edit ${opts.item.name}`;
+                opts.title = `Edit ${opts.item.name}`;   
             }
 
             //opts = $.extend(defaults, opts);

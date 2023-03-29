@@ -542,7 +542,7 @@
 
     <script src="{{asset('ermirshehaj/devpos/js/devpos.js')}}"></script>
     <script src="{{asset('ermirshehaj/devpos/js/templates.js')}}"></script>
-
+     
 
     <script>
 

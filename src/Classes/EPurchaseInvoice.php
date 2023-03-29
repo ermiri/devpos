@@ -332,4 +332,39 @@ class EPurchaseInvoice extends Model {
         //return $this->delete('/api/v3/Invoice/'. $id);
     }
 
+    public function aprove($eic) {
+
+
+        //validate first
+        $validation = Validator::make(['eic' => $eic], [
+
+            'eic' => 'required|string|max:60'
+        ]);
+
+        if ($validation->fails()) {
+
+            throw new \Illuminate\Validation\ValidationException($validation);
+        }
+
+        //when aprove set status = 0
+        return $this->put('/api/v3/EInvoice/?eicList='. $eic .'&status=0', []);
+    }
+
+    public function refuse($eic) {
+
+        //validate first
+        $validation = Validator::make(['eic' => $eic], [
+
+            'eic' => 'required|string|max:60'
+        ]);
+
+        if ($validation->fails()) {
+
+            throw new \Illuminate\Validation\ValidationException($validation);
+        }
+
+        //when refuse set status = 1
+        return $this->put('/api/v3/EInvoice/?eicList='. $eic .'&status=1', []);
+    }
+
 }

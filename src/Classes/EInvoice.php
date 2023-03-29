@@ -145,17 +145,18 @@ class EInvoice extends Model {
          */
 
         //get taxpayer
-        $taxPayer = DevPos::taxPayer()->list();
+        $taxPayer = DevPos::taxPayer()->get();
 
         //add businessUnitCode
         $parameters['businessUnitCode'] = $taxPayer['businessUnitCode'];
 
         //add tcr_code
-        $parameters['tcrCode'] = session()->get('tcr.fiscalizationNumber');
-        $parameters['tcrId'] = session()->get('tcr.id');
+        $parameters['tcrCode'] = $parameters['tcrCode'] ?? session()->get('tcr.fiscalizationNumber');
+        $parameters['tcrId'] = $parameters['tcrId'] ?? session()->get('tcr.id');
 
         //isEInvoice is required, so we put it manually
-        $parameters['isEInvoice'] = boolval($parameters['isEInvoice'] ?? 1);
+        $parameters['isEInvoice'] = true;
+        $parameters['isEinvoice'] = true;
         $parameters['invoiceType'] = 1;
         $parameters['isReverseCharge'] = false;
 
@@ -186,7 +187,7 @@ class EInvoice extends Model {
             'currencyCode' => 'nullable|string|max:3', 
             'exchangeRate' => 'nullable|numeric', 
             'orderIICRef' => 'nullable|list:string', 
-            'notes' => 'nullable|string|max:100', 
+            'notes' => 'nullable|string|max:150', 
 
             'customer' => 'required_with:isEInvoice,selfIssuingType|array', 
                 'customer.idNumber' => 'required_with:customer|string|max:20',
@@ -213,13 +214,13 @@ class EInvoice extends Model {
                 'invoiceFees.*.feeType' => 'required_with:invoiceFees',
                 'invoiceFees.*.amount' => 'required_with:invoiceFees|numeric',
 
-            'invoicePayments' => 'nullable|array',
+            'invoicePayments' => 'required|array',
                 'invoicePayments.*.accountId' => 'nullable|numeric',
-                'invoicePayments.*.paymentMethodType' => 'required_with:invoicePayments|string|max:100',
-                'invoicePayments.*.amount' => 'required_with:invoicePayments|string|max:100',
+                'invoicePayments.*.paymentMethodType' => 'required|string|max:100',
+                'invoicePayments.*.amount' => 'required|string|max:100',
                 'invoicePayments.*.companyCard' => 'nullable|string|max:100',
                 'invoicePayments.*.Voucher' => 'nullable|max:100',
-                'invoicePayments.*.accountDetails' => 'array',
+                'invoicePayments.*.accountDetails' => 'nullable|array',
                     'invoicePayments.*.accountDetails.bankName' => 'required_with:invoicePayments.*.accountDetails|string|max:100',
                     'invoicePayments.*.accountDetails.bankCity' => 'required_with:invoicePayments.*.accountDetails|string|max:100',
                     'invoicePayments.*.accountDetails.accountNumber' => 'required_with:invoicePayments.*.accountDetails|string|max:100',
@@ -258,10 +259,10 @@ class EInvoice extends Model {
                 'eInvoiceDetails.sellerPhone' => 'nullable|string|max:100',
                 'eInvoiceDetails.sellerMail' => 'nullable|string|max:100',
                 'eInvoiceDetails.deliveryDate' => 'nullable|date'
+            //'printInvoice' => false,
                 
         ]);
 
-       // print_r($parameters);
 
         if ($validation->fails()) {
 
@@ -276,29 +277,41 @@ class EInvoice extends Model {
         $parameters['isSimplifiedInvoice'] = boolval($parameters['isSimplifiedInvoice'] ?? 0);
         $parameters['selfIssuing'] = (int)$parameters['selfIssuing'];
         $parameters['valuesAreInForeignCurrency'] = boolval($parameters['valuesAreInForeignCurrency'] ?? 0);
+        $parameters['clientApplication'] = (int)($parameters['clientApplication']);
+
+        if (isset($parameters['subsequentDeliveryType'])) {
+
+            $parameters['subsequentDeliveryType'] = (int)($parameters['subsequentDeliveryType']);
+        }
 
         //customer
-        if (empty($parameters['customer']['idNumber']) && empty($parameters['customer']['name']))
-            unset($parameters['customer']);
-        elseif (!empty($parameters['customer'])) {
-
-            $parameters['customer']['idType'] = (int)$parameters['customer']['idType'];
-        }
+        $parameters['customer']['idType'] = (int)$parameters['customer']['idType'];
 
         foreach($parameters['invoiceProducts'] as $ind => $product) {
 
             $parameters['invoiceProducts'][$ind]['isRebateReducingBasePrice'] = boolval($product['isRebateReducingBasePrice'] ?? 0);
             $parameters['invoiceProducts'][$ind]['vatRate'] = 0;
 
+            $parameters['invoiceProducts'][$ind]['barcode'] = (string)($product['name'] ?? rand(1000, 1000000));
+            
             unset($parameters['invoiceProducts'][$ind]['productId']);
         }
 
         //invoicePayments
-        foreach($parameters['invoicePayments'] as $ind => $payment) {
+        foreach($parameters['invoicePayments'] as $i => $payment) {
 
-            $parameters['invoicePayments'][$ind]['paymentMethodType'] = (int)$payment['paymentMethodType'];
-            $parameters['invoicePayments'][$ind]['amount'] = (float)$payment['amount'];
+            $parameters['invoicePayments'][$i]['paymentMethodType'] = (int)$payment['paymentMethodType'];
+            $parameters['invoicePayments'][$i]['amount'] = (float)$payment['amount'];
+
+            foreach($payment['invoicePaymentAccounts'] as $key => $pay) {
+
+                $parameters['invoicePayments'][$i]['invoicePaymentAccounts'][$key]['accountId'] = (int)$pay['accountId'];
+            }
         }
+
+        
+        //return $parameters;
+
 
         return $this->post('/api/v3/Invoice', $parameters);
     }
@@ -344,6 +357,22 @@ class EInvoice extends Model {
     public function destroy($id) {
 
         //return $this->delete('/api/v3/Invoice/'. $id);
+    }
+
+    public function resend($iic) {
+
+        //do some validations
+        $validation = Validator::make(['iic' => $iic], [
+
+            'iic' => 'required|string|min:3|max:60', 
+        ]);
+
+        if($validation->fails()) {
+
+            throw new \Illuminate\Validation\ValidationException($validation);
+        }
+
+        return $this->put('/api/v3/Invoice/resendeinvoice/'. $iic, []);
     }
 
 }

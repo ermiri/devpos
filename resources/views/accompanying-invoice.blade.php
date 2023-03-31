@@ -185,6 +185,9 @@
     <script src="{{ asset('assets\vendors\custom\jquery-qrcode\jquery.qrcode.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets\vendors\custom\jquery-qrcode\qrcode.js') }}" type="text/javascript"></script>
 
+    <script src="{{asset('ermirshehaj/devpos/js/devpos.js')}}"></script>
+    <script src="{{asset('ermirshehaj/devpos/js/templates.js')}}"></script>
+
     <script>
 
         //put all tcrs to cache

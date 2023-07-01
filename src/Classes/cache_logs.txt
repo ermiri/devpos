@@ -67,3 +67,14 @@ https://online.devpos.al/assets/json/country.json: devpos.cbbb3c0f0fca70d9ffad71
 https://online.devpos.al/assets/json/cities.json: devpos.677ca1402f1ed87bc9f71ad2eebdaac4
 https://online.devpos.al/api/v3/Accounts: devpos.712a61e3279056eb8b01c0c45b44e00f
 https://online.devpos.al/assets/json/idTypes.json: devpos.058486512bb9256d5a716f9a0fef5abf
+https://online.devpos.al/api/v3/TCR: devpos.fbd399e8832519130d3e0a77b82b4179
+https://online.devpos.al/assets/json/paymentMethodType.json: devpos.a1fa78a731575500a071d73039d17ba2
+https://online.devpos.al/assets/json/feeTypes.json: devpos.8c14224830d9a4e8b7ee9762d29718dc
+https://online.devpos.al/api/v3/Customer: devpos.4b020847410aef38a18197a1c17ab92f
+https://online.devpos.al/assets/json/clientCardTypes.json: devpos.61a608801036a69a66969f5cd913beb7
+https://online.devpos.al/assets/json/typeOfSelfIssuing.json: devpos.d0a74cab984ea914ea557fdcf3bf1310
+https://online.devpos.al/assets/json/currencies.json: devpos.f9ca12017c2d64fc444a5c01c00b3cdb
+https://online.devpos.al/assets/json/country.json: devpos.cbbb3c0f0fca70d9ffad711c21d91f4c
+https://online.devpos.al/assets/json/cities.json: devpos.677ca1402f1ed87bc9f71ad2eebdaac4
+https://online.devpos.al/api/v3/Accounts: devpos.712a61e3279056eb8b01c0c45b44e00f
+https://online.devpos.al/assets/json/idTypes.json: devpos.058486512bb9256d5a716f9a0fef5abf

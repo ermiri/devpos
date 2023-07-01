@@ -4105,6 +4105,12 @@ var DevPos = {
                         `;
                     }}
                 },
+                total: {
+    
+                    get: true,
+                    attribute: 'totalPrice',
+                    currentPage: true,
+                },
                 onUpdate: function(instance) {
 
                     $(instance).find('a[data-id] i.la.la-pencil').closest('a').click(function(){
@@ -4135,12 +4141,27 @@ var DevPos = {
             let self = this;
 
             new Route(this.itemType).prefix(this.prefix).query(this.queryParameters()).get(function(res) {
+
+                let totalRows = [
+                    {
+                      "total": 0,
+                      "totalRow": true,
+                      "currentPageTotal": true
+                    },
+                    {
+                      "total": res.Data?.reduce((partialSum, a) => partialSum + parseFloat(a.totalPrice), 0),
+                      "totalRow": true
+                    }
+                ];
+
+
+                console.log(totalRows);
     
                 self.list({
     
                     columns: ['id', 'operatorName', 'invoiceNumber', 'dateTimeCreated', 'totalPrice', 'customerBusinessName', 'amount', 'notes', 'actions'],
                     additionalColumns: ['isCorrectiveInvoice', 'isACorrectedInvoice'],
-                    source: res.Data,
+                    source: res.Data.concat(totalRows),
                     filter: function(source = []) {
     
                         return self.filter(source);
